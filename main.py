@@ -53,7 +53,7 @@ plt.show()
 #Valudação por método de Monte Carlo
 #--------------------------------------
 
-R = 10
+R = 500
 accuracies = []
 
 perceptron = Perceptron(eta=0.1, max_epochs=100)
@@ -101,4 +101,3 @@ plt.xlabel("Épocas")
 plt.ylabel("Erro total")
 plt.title("Curva de aprendizado - última rodada")
 plt.show()
-
