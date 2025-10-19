@@ -28,7 +28,8 @@ class Adaline:
             self.eqm_list.append(eqm)
 
             if abs(previous_eqm - eqm) <= self.eps:
-                print(f"Treinamento de modelo adaline convergiu na época {epoch + 1}.")
+                print(f"Treinamento de modelo adaline convergiu numericamente na época {epoch + 1}.")
+                print(f"Época {epoch+1}: EQM = {eqm:.6f}")
                 break
             previous_eqm = eqm
 
