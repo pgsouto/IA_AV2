@@ -27,12 +27,11 @@ class Perceptron:
                 total_error += abs(e)
             self.errors_by_epoch.append(total_error)
             if total_error == 0:
-                print(f"Treinamento convergiu na época {epoch + 1}.")
+                print(f"Treinamento do modelo perceptron convergiu na época {epoch + 1}.")
                 break
         else:
-            print("Treinamento atingiu o limite de épocas sem convergir.")
-            print(f"Limite de épocas padrão: {self.max_epochs}")
-    
+            print("Treinamento do modelo perceptron atingiu o limite de épocas sem convergir.")
+
     def predict(self, X):
         "Função que classifica novas amostras"
         X = np.insert(X, 0, -1, axis=1)
