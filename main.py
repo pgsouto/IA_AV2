@@ -85,7 +85,7 @@ plt.show()
 #=======================================
 
 #total de rodadas 
-R = 500
+R = 1
 
 #inicialização das listas que registrarão as métricas de desempenho para cada modelo 
 accuracies_perceptron = []
