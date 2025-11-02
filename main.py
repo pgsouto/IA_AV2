@@ -6,7 +6,7 @@ from tabulate import tabulate
 
 from models.perceptron import Perceptron
 from models.adaline import Adaline
-
+from models.mlp import MLP
 # ===============================
 # Funções auxiliares
 # ===============================
@@ -69,7 +69,7 @@ x2_class1 = entry_x2[classes == 1]
 #================================================================
 #Visualização do gráfico de espalhamento das entradas por classe
 #================================================================
-plt.figure(figsize=(6, 6))
+'''plt.figure(figsize=(6, 6))
 
 plt.scatter(x1_class0, x2_class0, color="green", label="Classe -1")
 plt.scatter(x1_class1, x2_class1, color="red", label="Classe 1")
@@ -78,7 +78,7 @@ plt.xlabel("x1")
 plt.ylabel("x2")
 plt.title("Distribuição das classes do dataset spiral_d")
 plt.legend()
-plt.show()
+plt.show()'''
 
 #=======================================
 #Validação por método de Monte Carlo
@@ -99,6 +99,12 @@ recalls_adaline = []
 specificities_adaline = []
 precisions_adaline = []
 f1s_adaline = []
+
+acuracies_mlp = []
+recalls_mlp = []
+specificities_mlp = []
+precisions_mlp = []
+f1s_mlp = []
 
 #instancias dos modelos redes neurais implementados
 perceptron = Perceptron(eta=0.1, max_epochs=100)
@@ -149,7 +155,25 @@ for montecarlo_round in range(R):
     precisions_adaline.append(prec)
     f1s_adaline.append(f1)
 
-    if montecarlo_round == 0:
+    #Treinamento do MLP
+    print(y_train.shape)
+    n1 = np.sum(y_train[:]==1)
+    n2 = np.sum(y_train[:]==-1)
+    Y_MLP_train = np.zeros((2, 1120))
+
+    for i in range(y_train.shape[0]):  
+        if y_train[i] == 1:
+            Y_MLP_train[0, i] = 1
+            Y_MLP_train[1, i] = -1
+        else:
+            Y_MLP_train[0, i] = -1
+            Y_MLP_train[1, i] = 1
+        
+    mlp = MLP(X_train.T, Y_MLP_train, [1000, 1000, 1000, 1000, 500, 250, 50], learning_rate=0.001, tol=1e-12, max_epoch=30)
+    mlp.fit()
+    print(f"Último EQM: {mlp.EQM_atual}")
+
+    '''if montecarlo_round == 0:
         cm_perceptron = create_confusion_matrix(y_test, y_pred_perceptron)
         plt.figure(figsize=(5,4))
         sns.heatmap(cm_perceptron, annot=True, fmt='d', cmap='Blues')
@@ -164,12 +188,13 @@ for montecarlo_round in range(R):
         plt.xlabel("Previsto")
         plt.ylabel("Real")
         plt.title(f"Matriz de confusão Adaline - rodada {montecarlo_round+1}")
-        plt.show()
+        plt.show()'''
 # Estatísticas da acurácia
-show_measures_table("Perceptron", accuracies_perceptron, recalls_perceptron, specificities_perceptron, precisions_perceptron, f1s_perceptron)
+'''show_measures_table("Perceptron", accuracies_perceptron, recalls_perceptron, specificities_perceptron, precisions_perceptron, f1s_perceptron)
 show_measures_table("Adaline", accuracies_adaline, recalls_adaline, specificities_adaline, precisions_adaline, f1s_adaline)
+'''
 
-# Curva de aprendizado da última rodada
+'''# Curva de aprendizado da última rodada
 plt.figure()
 plt.plot(range(1, len(perceptron.errors_by_epoch)+1), perceptron.errors_by_epoch, marker='o')
 plt.xlabel("Épocas")
@@ -182,4 +207,4 @@ plt.plot(range(1, len(adaline.eqm_list)+1), adaline.eqm_list, marker='o')
 plt.xlabel("Épocas")
 plt.ylabel("EQM")
 plt.title("Curva de aprendizado Adaline - última rodada")
-plt.show()
+plt.show()'''

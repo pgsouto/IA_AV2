@@ -31,6 +31,9 @@ class MLP:
         self.delta = [None]*len(topology)
         self.max_epoch = max_epoch
 
+        self.atingiu_epoca_maxima = False
+        self.atingiu_EQM_minimo = False
+        self.EQM_atual = 0
 
 
     def g(self,u):
@@ -98,13 +101,16 @@ class MLP:
                 d = self.D[:, t].reshape(self.m, 1)
                 e = d - y
                 self.backward(x_t, e)
-            EQM = self.EQM()
-            print(f"epoca = {epoch}, EQM = {EQM}")
-            if EQM < self.tol:
-                break
+            self.EQM_atual = self.EQM()
+            print(f"epoca = {epoch}, EQM = {self.EQM_atual}")
+            if self.EQM_atual < self.tol:
+                self.atingiu_EQM_minimo = True
+                return
+        self.atingiu_epoca_maxima = True
         
     def predict(self, x_t):
         x_t = x_t.reshape(self.p+1, 1)
+        self.foward()
         return self.y[-1]
     
     
