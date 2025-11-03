@@ -102,15 +102,20 @@ class MLP:
                 e = d - y
                 self.backward(x_t, e)
             self.EQM_atual = self.EQM()
-            print(f"epoca = {epoch}, EQM = {self.EQM_atual}")
+            #print(f"epoca = {epoch}, EQM = {self.EQM_atual}")
             if self.EQM_atual < self.tol:
                 self.atingiu_EQM_minimo = True
                 return
         self.atingiu_epoca_maxima = True
         
     def predict(self, x_t):
-        x_t = x_t.reshape(self.p+1, 1)
-        self.foward()
-        return self.y[-1]
-    
-    
+        x_t = x_t.reshape(self.p, 1)
+        x_t = np.vstack((
+            -np.ones((1,1)), x_t
+        ))
+        self.foward(x_t)
+        y_t = self.y[-1]
+        if y_t[0] > y_t[1]:
+            return 1
+        else:
+            return -1

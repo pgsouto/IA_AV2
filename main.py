@@ -169,9 +169,22 @@ for montecarlo_round in range(R):
             Y_MLP_train[0, i] = -1
             Y_MLP_train[1, i] = 1
         
-    mlp = MLP(X_train.T, Y_MLP_train, [1000, 1000, 1000, 1000, 500, 250, 50], learning_rate=0.001, tol=1e-12, max_epoch=30)
+    mlp = MLP(X_train.T, Y_MLP_train, [1000, 1000, 1000, 1000, 500, 250, 50], learning_rate=0.001, tol=1e-12, max_epoch=10)
     mlp.fit()
-    print(f"Último EQM: {mlp.EQM_atual}")
+    print(f"Último EQM do MLP: {mlp.EQM_atual}")
+
+    #Teste do MLP
+    q_acertos = 0
+    for t in range(y_test.shape[0]):
+        y_t = mlp.predict(X_train.T[:, i])
+        d_t = y_test[t]
+        if y_t == d_t:
+            q_acertos += 1
+    print(f"ACURÁCIA MLP: {q_acertos / y_test.shape[0]}")
+
+    
+    #print(f"Acuracia MLP: {q_acertos / y_test.shape[0]}")
+        
 
     '''if montecarlo_round == 0:
         cm_perceptron = create_confusion_matrix(y_test, y_pred_perceptron)
@@ -190,9 +203,9 @@ for montecarlo_round in range(R):
         plt.title(f"Matriz de confusão Adaline - rodada {montecarlo_round+1}")
         plt.show()'''
 # Estatísticas da acurácia
-'''show_measures_table("Perceptron", accuracies_perceptron, recalls_perceptron, specificities_perceptron, precisions_perceptron, f1s_perceptron)
+show_measures_table("Perceptron", accuracies_perceptron, recalls_perceptron, specificities_perceptron, precisions_perceptron, f1s_perceptron)
 show_measures_table("Adaline", accuracies_adaline, recalls_adaline, specificities_adaline, precisions_adaline, f1s_adaline)
-'''
+
 
 '''# Curva de aprendizado da última rodada
 plt.figure()
