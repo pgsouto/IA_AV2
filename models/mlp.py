@@ -106,6 +106,10 @@ class MLP:
             if self.EQM_atual < self.tol:
                 self.atingiu_EQM_minimo = True
                 return
+            if epoch % 1 == 0:
+                porcentagem = epoch / self.max_epoch
+                print(f"Loading do treinamento: {porcentagem:.2f}")
+
         self.atingiu_epoca_maxima = True
         
     def predict(self, x_t):

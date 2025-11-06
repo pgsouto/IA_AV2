@@ -169,7 +169,7 @@ for montecarlo_round in range(R):
             Y_MLP_train[0, i] = -1
             Y_MLP_train[1, i] = 1
         
-    mlp = MLP(X_train.T, Y_MLP_train, [1000, 1000, 1000, 1000, 500, 250, 50], learning_rate=0.001, tol=1e-12, max_epoch=10)
+    mlp = MLP(X_train.T, Y_MLP_train, [1000, 1000, 1000, 1000, 500, 250, 50], learning_rate=0.001, tol=1e-12, max_epoch=250)
     mlp.fit()
     print(f"Último EQM do MLP: {mlp.EQM_atual}")
 
