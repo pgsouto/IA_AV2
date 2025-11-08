@@ -156,7 +156,6 @@ for montecarlo_round in range(R):
     f1s_adaline.append(f1)
 
     #Treinamento do MLP
-    print(y_train.shape)
     n1 = np.sum(y_train[:]==1)
     n2 = np.sum(y_train[:]==-1)
     Y_MLP_train = np.zeros((2, 1120))
@@ -169,24 +168,48 @@ for montecarlo_round in range(R):
             Y_MLP_train[0, i] = -1
             Y_MLP_train[1, i] = 1
         
-    mlp = MLP(X_train.T, Y_MLP_train, [1000, 1000, 1000, 1000, 500, 250, 50], learning_rate=0.001, tol=1e-12, max_epoch=250)
+    mlp = MLP(X_train.T, Y_MLP_train, [1000, 1000, 1000, 1000, 500, 250, 50], learning_rate=0.001, tol=1e-12, max_epoch=1)
     mlp.fit()
-    print(f"Último EQM do MLP: {mlp.EQM_atual}")
-
+    #print(f"Último EQM do MLP: {mlp.EQM_atual}")
+    
     #Teste do MLP
-    q_acertos = 0
+    true_positive = 0
+    true_negative = 0
+    false_positive = 0
+    false_negative = 0
     for t in range(y_test.shape[0]):
-        y_t = mlp.predict(X_train.T[:, i])
+        y_t = mlp.predict(X_test.T[:, t])
         d_t = y_test[t]
-        if y_t == d_t:
-            q_acertos += 1
-    print(f"ACURÁCIA MLP: {q_acertos / y_test.shape[0]}")
+        if y_t == 1 and d_t == 1:
+            true_positive += 1
+        elif y_t == -1 and d_t == -1:
+            true_negative += 1
+        elif y_t == 1 and d_t == -1:
+            false_positive += 1
+        elif y_t == -1 and d_t == 1:
+            false_negative += 1
+    q_acertos = true_positive + true_negative
+    acuracia_mlp = q_acertos / (true_negative + true_positive + false_negative + false_positive)
+    recall_mlp = true_positive / (true_positive + false_negative) if (true_positive + false_negative) != 0 else 0
+    specificity_mlp = true_negative / (true_negative + false_positive) if (true_negative + false_positive) != 0 else 0
+    precision = true_positive / (true_positive + false_positive) if (true_positive + false_positive) != 0 else 0
+    f1_score = 2 * (precision * recall_mlp) / (precision + recall_mlp) if (precision + recall_mlp) != 0 else 0
+    
+    acuracies_mlp.append(acuracia_mlp)
+    recalls_mlp.append(recall_mlp)
+    specificities_mlp.append(specificity_mlp)
+    precisions_mlp.append(precision)
+    f1s_mlp.append(f1_score)
+
+
+
+    #print(f"ACURÁCIA MLP: {(q_acertos / (true_negative + true_positive + false_negative + false_positive))}")
 
     
     #print(f"Acuracia MLP: {q_acertos / y_test.shape[0]}")
         
 
-    '''if montecarlo_round == 0:
+    if montecarlo_round == 0:
         cm_perceptron = create_confusion_matrix(y_test, y_pred_perceptron)
         plt.figure(figsize=(5,4))
         sns.heatmap(cm_perceptron, annot=True, fmt='d', cmap='Blues')
@@ -201,13 +224,23 @@ for montecarlo_round in range(R):
         plt.xlabel("Previsto")
         plt.ylabel("Real")
         plt.title(f"Matriz de confusão Adaline - rodada {montecarlo_round+1}")
-        plt.show()'''
+        plt.show()
+
+        cm_mlp = np.array([[true_positive, false_positive], [false_negative, true_positive]])
+        plt.figure(figsize=(5, 4))
+        sns.heatmap(cm_mlp, annot=True, fmt='d', cmap='Blues')
+        plt.xlabel("Previsto")
+        plt.ylabel("Real")
+        plt.title(f"Matriz de confusão MLP - rodada {montecarlo_round+1}")
+        plt.show()
+        
 # Estatísticas da acurácia
 show_measures_table("Perceptron", accuracies_perceptron, recalls_perceptron, specificities_perceptron, precisions_perceptron, f1s_perceptron)
 show_measures_table("Adaline", accuracies_adaline, recalls_adaline, specificities_adaline, precisions_adaline, f1s_adaline)
 
+show_measures_table("MLP", acuracies_mlp, recalls_mlp, specificities_mlp, precisions_mlp, f1s_mlp)
 
-'''# Curva de aprendizado da última rodada
+# Curva de aprendizado da última rodada
 plt.figure()
 plt.plot(range(1, len(perceptron.errors_by_epoch)+1), perceptron.errors_by_epoch, marker='o')
 plt.xlabel("Épocas")
@@ -220,4 +253,4 @@ plt.plot(range(1, len(adaline.eqm_list)+1), adaline.eqm_list, marker='o')
 plt.xlabel("Épocas")
 plt.ylabel("EQM")
 plt.title("Curva de aprendizado Adaline - última rodada")
-plt.show()'''
+plt.show()

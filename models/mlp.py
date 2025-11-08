@@ -1,5 +1,5 @@
 import numpy as np
-
+from time import time
 class MLP:
     def __init__(self, X_treino, Y_treino, topology, learning_rate=1e-3, tol = 1e-12,max_epoch=10000):
         self.p, self.N = X_treino.shape
@@ -106,21 +106,8 @@ class MLP:
             if self.EQM_atual < self.tol:
                 self.atingiu_EQM_minimo = True
                 return
-            if epoch % 50 == 0:
-                porcentagem = epoch / self.max_epoch
-                print(f"Loading do treinamento: {porcentagem:.2f}")
-                np.savez(
-                    'datasets/checkpoint.npz',
-                    W0=self.W[0],
-                    W1=self.W[1],
-                    W2=self.W[2],
-                    W3=self.W[3],
-                    W4=self.W[4],
-                    W5=self.W[5],
-                    W6=self.W[6],
-                    W7=self.W[7],
-                    epoca=epoch
-                )
+            
+
 
         self.atingiu_epoca_maxima = True
         
