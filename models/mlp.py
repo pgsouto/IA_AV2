@@ -34,6 +34,7 @@ class MLP:
         self.atingiu_epoca_maxima = False
         self.atingiu_EQM_minimo = False
         self.EQM_atual = 0
+        self.errors_by_epoch = []
 
 
     def g(self,u):
@@ -93,7 +94,9 @@ class MLP:
         return s / (2*self.N)
     
     def fit(self):
+        
         for epoch in range(self.max_epoch):
+            t1 = time()
             for t in range(self.N):
                 x_t = self.X_treino[:, t].reshape(self.p+1, 1)
                 self.foward(x_t)
@@ -102,13 +105,14 @@ class MLP:
                 e = d - y
                 self.backward(x_t, e)
             self.EQM_atual = self.EQM()
+            self.errors_by_epoch.append(self.EQM_atual)
+            t2 = time()
+            if epoch % 10 == 0:
+                print(f"Loading... {epoch / self.max_epoch}%, Erro: {self.EQM_atual}")
             #print(f"epoca = {epoch}, EQM = {self.EQM_atual}")
             if self.EQM_atual < self.tol:
                 self.atingiu_EQM_minimo = True
                 return
-            
-
-
         self.atingiu_epoca_maxima = True
         
     def predict(self, x_t):
@@ -122,3 +126,25 @@ class MLP:
             return 1
         else:
             return -1
+        
+    def predict2(self, x_t):
+        x_t = x_t.reshape(self.p, 1)
+        x_t = np.vstack((
+            -np.ones((1,1)), x_t
+        ))
+        self.foward(x_t)
+        y_t = self.y[-1]
+        maior = 0
+        indice_maior = 0
+        for i in range(len(y_t)):
+            if i == 0:
+                maior = y_t[i]
+                indice_maior = 0
+            else:
+                if y_t[i] > maior:
+                    maior = y_t[i]
+                    indice_maior = i
+        #print("y_t dentro da rede")
+        #print(y_t)
+        return indice_maior
+    

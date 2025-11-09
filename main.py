@@ -69,7 +69,7 @@ x2_class1 = entry_x2[classes == 1]
 #================================================================
 #Visualização do gráfico de espalhamento das entradas por classe
 #================================================================
-'''plt.figure(figsize=(6, 6))
+plt.figure(figsize=(6, 6))
 
 plt.scatter(x1_class0, x2_class0, color="green", label="Classe -1")
 plt.scatter(x1_class1, x2_class1, color="red", label="Classe 1")
@@ -78,7 +78,7 @@ plt.xlabel("x1")
 plt.ylabel("x2")
 plt.title("Distribuição das classes do dataset spiral_d")
 plt.legend()
-plt.show()'''
+plt.show()
 
 #=======================================
 #Validação por método de Monte Carlo
@@ -105,6 +105,7 @@ recalls_mlp = []
 specificities_mlp = []
 precisions_mlp = []
 f1s_mlp = []
+erros_por_epocas_mlp = []
 
 #instancias dos modelos redes neurais implementados
 perceptron = Perceptron(eta=0.1, max_epochs=100)
@@ -167,8 +168,9 @@ for montecarlo_round in range(R):
         else:
             Y_MLP_train[0, i] = -1
             Y_MLP_train[1, i] = 1
-        
+    #MLP testado com 2 topologias diferentes:    
     mlp = MLP(X_train.T, Y_MLP_train, [1000, 1000, 1000, 1000, 500, 250, 50], learning_rate=0.001, tol=1e-12, max_epoch=1)
+    #mlp = MLP(X_train.T, Y_MLP_train, [7, 7, 7, 7, 7, 7, 7], learning_rate=0.001, tol=1e-12, max_epoch=2)
     mlp.fit()
     #print(f"Último EQM do MLP: {mlp.EQM_atual}")
     
@@ -201,7 +203,8 @@ for montecarlo_round in range(R):
     precisions_mlp.append(precision)
     f1s_mlp.append(f1_score)
 
-
+    print("AQUIIIII")
+    print(y_test.shape[0], (true_positive + true_negative + false_positive + false_negative))
 
     #print(f"ACURÁCIA MLP: {(q_acertos / (true_negative + true_positive + false_negative + false_positive))}")
 
@@ -226,14 +229,15 @@ for montecarlo_round in range(R):
         plt.title(f"Matriz de confusão Adaline - rodada {montecarlo_round+1}")
         plt.show()
 
-        cm_mlp = np.array([[true_positive, false_positive], [false_negative, true_positive]])
+        cm_mlp = np.array([[true_negative, false_positive], [false_negative, true_positive]])
         plt.figure(figsize=(5, 4))
         sns.heatmap(cm_mlp, annot=True, fmt='d', cmap='Blues')
         plt.xlabel("Previsto")
         plt.ylabel("Real")
         plt.title(f"Matriz de confusão MLP - rodada {montecarlo_round+1}")
         plt.show()
-        
+        erros_por_epocas_mlp = mlp.errors_by_epoch
+
 # Estatísticas da acurácia
 show_measures_table("Perceptron", accuracies_perceptron, recalls_perceptron, specificities_perceptron, precisions_perceptron, f1s_perceptron)
 show_measures_table("Adaline", accuracies_adaline, recalls_adaline, specificities_adaline, precisions_adaline, f1s_adaline)
@@ -253,4 +257,12 @@ plt.plot(range(1, len(adaline.eqm_list)+1), adaline.eqm_list, marker='o')
 plt.xlabel("Épocas")
 plt.ylabel("EQM")
 plt.title("Curva de aprendizado Adaline - última rodada")
+plt.show()
+
+
+plt.figure()
+plt.plot(range(1, len(erros_por_epocas_mlp)+1), erros_por_epocas_mlp, marker='o')
+plt.xlabel("Épocas")
+plt.ylabel("EQM")
+plt.title("Curva de aprendizado MLP - primeira rodada")
 plt.show()
